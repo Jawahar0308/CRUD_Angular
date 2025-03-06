@@ -1,0 +1,7 @@
+<tbody class="bg-white divide-y divide-gray-200 max-h-96 overflow-y-auto block">
+    <tr *ngFor="let user of users" class="table-row w-full table">
+        <td class="px-4 py-2 border-b" *ngFor="let column of columns">
+            {{ row[column] }}
+        </td>
+    </tr>
+</tbody>
