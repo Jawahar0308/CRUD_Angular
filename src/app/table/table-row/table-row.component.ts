@@ -1,28 +1,44 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { InputCellComponent } from "../../../ui/input-cell/input-cell.component";
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-table-row',
   standalone: true,
-  imports: [CommonModule, InputCellComponent],
+  imports: [CommonModule, FormsModule],
   template: `
-    <tbody class="bg-white divide-y divide-gray-200">
+    <tbody>
       <tr *ngFor="let row of data" class="hover:bg-gray-100">
-        <td *ngFor="let col of columns; let i = index" class="px-4 py-2 border border-gray-300">
-          <app-input-cell [value]="getNestedValue(row, columnDataMapper[i])" class="w-full block"></app-input-cell>
+        <td *ngFor="let col of columns; let i = index" 
+            class="border border-gray-300 h-10"
+            [ngClass]="{'text-center': i === 0, 'p-0': i !== 0}">
+          <input *ngIf="i === 0" type="checkbox" class="h-4 w-4 text-blue-600">
+          <input *ngIf="i !== 0" 
+                 type="text" 
+                 [(ngModel)]="row[getPropertyPath(columnDataMapper[i-1])]" 
+                 class="w-full h-full px-2 border-0 focus:outline-none">
         </td>
       </tr>
     </tbody>
   `,
   styles: [`
     :host {
-      display: block;
-      width: 100%;
+      display: contents;
     }
     
     td {
-      border: 1px solid #d1d5db;
+      height: 40px;
+      padding: 0;
+    }
+    
+    input[type="text"] {
+      background: transparent;
+      box-sizing: border-box;
+    }
+    
+    input[type="checkbox"] {
+      display: block;
+      margin: 0 auto;
     }
   `]
 })
@@ -30,6 +46,10 @@ export class TableBodyComponent {
   @Input() data: any[] = [];
   @Input() columns: string[] = [];
   @Input() columnDataMapper: string[] = [];
+
+  getPropertyPath(path: string): string {
+    return path.split('.')[0];
+  }
 
   getNestedValue(obj: any, path: string): any {
     if (!path) return '';

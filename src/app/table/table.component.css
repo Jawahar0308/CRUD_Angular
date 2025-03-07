@@ -9,8 +9,8 @@ table {
     table-layout: fixed;
 }
 
+/* Make sure header sticks when scrolling */
 thead {
-    display: table-header-group;
     position: sticky;
     top: 0;
     z-index: 10;
@@ -18,25 +18,23 @@ thead {
 }
 
 tbody {
-    display: table-row-group;
     width: 100%;
 }
 
-tr {
-    display: table-row;
-    width: 100%;
+/* Use colgroup to enforce consistent widths */
+col {
+    width: calc(100% / var(--column-count, 8));
+}
+
+/* First column (checkbox) should be smaller */
+col:first-child {
+    width: 50px;
 }
 
 th,
 td {
-    display: table-cell;
-    overflow: hidden;
-    text-overflow: ellipsis;
     border: 1px solid #d1d5db;
-    /* Add visible borders */
-}
-
-.overflow-x-auto {
-    overflow-x: auto;
-    max-width: 100%;
+    padding: 0;
+    vertical-align: middle;
+    box-sizing: border-box;
 }
