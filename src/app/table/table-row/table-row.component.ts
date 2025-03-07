@@ -13,10 +13,12 @@ import { FormsModule } from '@angular/forms';
             class="border border-gray-300 h-10"
             [ngClass]="{'text-center': i === 0, 'p-0': i !== 0}">
           <input *ngIf="i === 0" type="checkbox" class="h-4 w-4 text-blue-600">
-          <input *ngIf="i !== 0" 
-                 type="text" 
-                 [(ngModel)]="row[getPropertyPath(columnDataMapper[i-1])]" 
-                 class="w-full h-full px-2 border-0 focus:outline-none">
+          <div *ngIf="i !== 0" class="w-full h-full">
+            <input type="text" 
+                 [ngModel]="getNestedValue(row, columnDataMapper[i-1])" 
+                 (ngModelChange)="updateNestedValue(row, columnDataMapper[i-1], $event)"
+                 class="w-full h-full px-2 border-0 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+          </div>
         </td>
       </tr>
     </tbody>
@@ -34,6 +36,11 @@ import { FormsModule } from '@angular/forms';
     input[type="text"] {
       background: transparent;
       box-sizing: border-box;
+      transition: all 0.2s;
+    }
+    
+    input[type="text"]:focus {
+      border: 1px solid #3b82f6;
     }
     
     input[type="checkbox"] {
@@ -47,15 +54,29 @@ export class TableBodyComponent {
   @Input() columns: string[] = [];
   @Input() columnDataMapper: string[] = [];
 
-  getPropertyPath(path: string): string {
-    return path.split('.')[0];
-  }
-
   getNestedValue(obj: any, path: string): any {
     if (!path) return '';
 
     return path.split('.').reduce((prev, curr) => {
       return prev && prev[curr] !== undefined ? prev[curr] : '';
     }, obj);
+  }
+
+  updateNestedValue(obj: any, path: string, value: any): void {
+    if (!path) return;
+
+    const parts = path.split('.');
+    const last = parts.pop();
+
+    // Navigate to the parent object
+    const parent = parts.reduce((prev, curr) => {
+      if (!prev[curr]) prev[curr] = {};
+      return prev[curr];
+    }, obj);
+
+    // Update the value
+    if (parent && last) {
+      parent[last] = value;
+    }
   }
 }
