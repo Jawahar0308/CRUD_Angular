@@ -9,7 +9,7 @@ import { InputCellComponent } from "../../../ui/input-cell/input-cell.component"
   template: `
     <tbody class="bg-white divide-y divide-gray-200">
       <tr *ngFor="let row of data" class="hover:bg-gray-100">
-        <td *ngFor="let col of columns; let i = index" class="px-4 py-2 border-b">
+        <td *ngFor="let col of columns; let i = index" class="px-4 py-2 border border-gray-300">
           <app-input-cell [value]="getNestedValue(row, columnDataMapper[i])" class="w-full block"></app-input-cell>
         </td>
       </tr>
@@ -19,6 +19,10 @@ import { InputCellComponent } from "../../../ui/input-cell/input-cell.component"
     :host {
       display: block;
       width: 100%;
+    }
+    
+    td {
+      border: 1px solid #d1d5db;
     }
   `]
 })

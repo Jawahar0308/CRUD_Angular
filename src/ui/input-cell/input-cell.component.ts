@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [FormsModule, CommonModule],
   template: `
-    <input type="text" [(ngModel)]="value" class="w-full px-2 py-1 border rounded focus:outline-none focus:border-blue-500" />
+    <input type="text" [(ngModel)]="value" class="w-full px-2 py-1 border-0 focus:outline-none focus:border-blue-500" />
   `,
   styles: [`
     :host {
@@ -18,6 +18,8 @@ import { CommonModule } from '@angular/common';
     input {
       box-sizing: border-box;
       width: 100%;
+      background: transparent;
+      border: none;
     }
   `]
 })

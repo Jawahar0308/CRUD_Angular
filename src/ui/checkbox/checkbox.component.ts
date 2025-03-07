@@ -1,10 +1,15 @@
-// filepath: /home/jawahar/FRONTEND/Angular/CRUD_Angular/src/app/ui/checkbox/checkbox.component.ts
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-checkbox',
-  templateUrl: './checkbox.component.html',
-  styleUrls: ['./checkbox.component.css'],
-  standalone: true
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+    <div class="flex items-center justify-center">
+      <input type="checkbox" class="h-4 w-4 text-blue-600 border border-gray-300 rounded">
+    </div>
+  `,
+  styleUrls: ['./checkbox.component.css']
 })
 export class CheckboxComponent { }

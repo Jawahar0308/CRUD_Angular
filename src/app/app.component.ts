@@ -14,8 +14,8 @@ import { ApiService } from './services/api.service';
 export class AppComponent implements OnInit {
   title = 'CRUD_Angular';
   users: any[] = [];
-  columns = ['Name', 'Company Name', 'Email', 'Street', 'City', 'Phone', 'Website', 'Title'];
-  columnDataMapper = ['name', 'company.name', 'email', 'address.street', 'address.city', 'phone', 'website', 'title'];
+  columns = ['Select', 'Name', 'Company Name', 'Email', 'Street', 'City', 'Phone', 'Website', 'Title'];
+  columnDataMapper = ['', 'name', 'company.name', 'email', 'address.street', 'address.city', 'phone', 'website', 'title'];
 
   constructor(private apiService: ApiService) { }
 

@@ -1,4 +1,3 @@
-/* In your table component's CSS file */
 :host {
     display: block;
     width: 100%;
@@ -7,6 +6,7 @@
 table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
 }
 
 thead {
@@ -19,8 +19,6 @@ thead {
 
 tbody {
     display: table-row-group;
-    max-height: 400px;
-    overflow-y: auto;
     width: 100%;
 }
 
@@ -34,7 +32,8 @@ td {
     display: table-cell;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
+    border: 1px solid #d1d5db;
+    /* Add visible borders */
 }
 
 .overflow-x-auto {
