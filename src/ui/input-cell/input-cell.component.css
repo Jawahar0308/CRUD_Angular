@@ -1,0 +1,9 @@
+/* filepath: /home/jawahar/FRONTEND/Angular/CRUD_Angular/src/app/ui/input-cell/input-cell.component.css */
+input {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    border: none;
+    padding: 0;
+    margin: 0;
+}

@@ -1,6 +1,6 @@
-<!-- filepath: /home/jawahar/FRONTEND/Angular/CRUD_Angular/src/app/layout/table-page/table-page.component.html -->
 <app-header></app-header>
-<div class="pt-16 pb-16">
-    <app-table></app-table>
+<div class="pt-16 pb-16 px-4">
+    <app-table [columns]="columns" [data]="data" [columnDataMapper]="columnDataMapper">
+    </app-table>
 </div>
 <app-footer></app-footer>

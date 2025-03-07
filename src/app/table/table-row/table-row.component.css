@@ -1,0 +1,5 @@
+/* filepath: /home/jawahar/FRONTEND/Angular/CRUD_Angular/src/app/table/table-row/table-row.component.css */
+td {
+    white-space: normal;
+    overflow-wrap: break-word;
+}

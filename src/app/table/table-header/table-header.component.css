@@ -1,0 +1,13 @@
+thead {
+    position: sticky;
+    top: 0;
+    background: #1F2937;
+    width: 100%;
+    z-index: 10;
+}
+
+
+/* th {
+    white-space: normal;
+    overflow-wrap: break-word;
+} */

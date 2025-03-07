@@ -1,34 +1,37 @@
-// filepath: /home/jawahar/FRONTEND/Angular/CRUD_Angular/src/app/table/table-row/table-row.component.ts
-import { Component, Input, OnInit } from '@angular/core';
-import { ApiService } from '../../services/api.service';
-import { InputCellComponent } from "../../../ui/input-cell/input-cell.component";
-import { CheckboxComponent } from "../../../ui/checkbox/checkbox.component";
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { InputCellComponent } from "../../../ui/input-cell/input-cell.component";
 
 @Component({
   selector: 'app-table-row',
   standalone: true,
-  templateUrl: './table-row.component.html',
-  styleUrls: ['./table-row.component.css'],
-  imports: [CommonModule, InputCellComponent, CheckboxComponent]
+  imports: [CommonModule, InputCellComponent],
+  template: `
+    <tbody class="bg-white divide-y divide-gray-200">
+      <tr *ngFor="let row of data" class="hover:bg-gray-100">
+        <td *ngFor="let col of columns; let i = index" class="px-4 py-2 border-b">
+          <app-input-cell [value]="getNestedValue(row, columnDataMapper[i])" class="w-full block"></app-input-cell>
+        </td>
+      </tr>
+    </tbody>
+  `,
+  styles: [`
+    :host {
+      display: block;
+      width: 100%;
+    }
+  `]
 })
-export class TableRowComponent {
+export class TableBodyComponent {
   @Input() data: any[] = [];
   @Input() columns: string[] = [];
+  @Input() columnDataMapper: string[] = [];
 
-  // users: any[] = [];
-  // albums: any[] = [];
-  // constructor(private apiService: ApiService) { }
+  getNestedValue(obj: any, path: string): any {
+    if (!path) return '';
 
-  // ngOnInit(): void {
-  //   this.apiService.fetchMultipleAPIs().subscribe(([users, albums]) => {
-  //     this.users = users;
-  //     this.albums = albums;
-  //   });
-  // }
-
-  // getAlbumTitle(userId: number): string {
-  //   const album = this.albums.find(album => album.userId === userId);
-  //   return album ? album.title : '';
-  // }
+    return path.split('.').reduce((prev, curr) => {
+      return prev && prev[curr] !== undefined ? prev[curr] : '';
+    }, obj);
+  }
 }

@@ -1,27 +1,31 @@
-// filepath: /home/jawahar/FRONTEND/Angular/CRUD_Angular/src/app/table/table.component.ts
-import { Component } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { TableHeaderComponent } from "./table-header/table-header.component";
-import { TableRowComponent } from "./table-row/table-row.component";
+import { TableBodyComponent } from "./table-row/table-row.component";
+import { ApiService } from "../services/api.service";
 
 @Component({
   selector: 'app-table',
-  imports: [TableHeaderComponent, TableRowComponent],
+  standalone: true,
+  imports: [CommonModule, TableHeaderComponent, TableBodyComponent],
   templateUrl: './table.component.html',
-  styleUrls: ['./table.component.css'],
-  standalone: true
+  styleUrls: ['./table.component.css']
 })
 export class TableComponent implements OnInit {
-  column: string[] = ['Name', 'Company Name', 'Email', 'Street', 'City', 'Phone', 'Website', 'Title'];
-  data: any[] = [];
+  @Input() columns: string[] = [];
+  @Input() columnDataMapper: string[] = [];
+  @Input() data: any[] = [];
 
   constructor(private apiService: ApiService) { }
 
   ngOnInit() {
-    this.apiService.getDataFromMultipleAPIs().subscribe(
-      (mergedData) => {
-        this.data = mergedData;
-      },
-      (error) => console.error('Error fetching data:', error)
-    );
+    if (!this.data || this.data.length === 0) {
+      this.apiService.getDataFromMultipleAPIs().subscribe(
+        (mergedData) => {
+          this.data = mergedData;
+        },
+        (error) => console.error('Error fetching data:', error)
+      );
+    }
   }
 }

@@ -1,7 +1,2 @@
 <!-- filepath: /home/jawahar/FRONTEND/Angular/CRUD_Angular/src/app/app.component.html -->
-<!-- filepath: /home/jawahar/FRONTEND/Angular/CRUD_Angular/src/app/app.component.html -->
-<app-table-page column="[ 'Name', 'Company Name', 'Email', 'Street', 'City', 'Phone', 'Website', 'Title' ]"
-    [data]="users"
-    [columnDataMapper]="['name', 'company.name', 'email', 'address.street', 'address.city', 'phone', 'website', 'id']">
-
-</app-table-page>
+<app-table-page [columns]="columns" [data]="users" [columnDataMapper]="columnDataMapper"></app-table-page>

@@ -1,10 +1,10 @@
 <div class="container mx-auto p-4">
-    <h2 class="text-2xl font-bold mb-4">User and Album Data</h2>
-    <div class="relative overflow-hidden border border-gray-300 rounded">
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
+    <h2 class="text-2xl font-bold mb-4">User Data</h2>
+    <div class="relative border border-gray-300 rounded">
+        <div class="relative w-full overflow-auto">
+            <table class="w-full table-fixed border border-gray-300">
                 <app-table-header [columns]="columns"></app-table-header>
-                <app-table-body [data]="data" [columns]="columns"></app-table-body>
+                <app-table-row [data]="data" [columns]="columns" [columnDataMapper]="columnDataMapper"></app-table-row>
             </table>
         </div>
     </div>

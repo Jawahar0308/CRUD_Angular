@@ -1,5 +1,8 @@
-<thead class="bg-gray-800 text-white sticky top-0 z-10">
-    <tr>
-        <th class="px-4 py-2 text-left" *ngFor="let column of columns">{{ column }}</th>
+<thead class="bg-gray-800 text-white sticky top-0 w-full">
+    <tr class="w-full">
+        <th class="px-4 py-2 border border-gray-300 w-12"><app-checkbox></app-checkbox></th>
+        <th *ngFor="let column of columns" class="px-4 py-2 border border-gray-300 w-32">
+            {{ column }}
+        </th>
     </tr>
 </thead>

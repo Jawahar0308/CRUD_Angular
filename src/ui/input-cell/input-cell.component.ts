@@ -1,13 +1,25 @@
-// filepath: /home/jawahar/FRONTEND/Angular/CRUD_Angular/src/app/ui/input-cell/input-cell.component.ts
 import { Component, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-input-cell',
-  templateUrl: './input-cell.component.html',
-  styleUrls: ['./input-cell.component.css'],
   standalone: true,
-  imports: [FormsModule]
+  imports: [FormsModule, CommonModule],
+  template: `
+    <input type="text" [(ngModel)]="value" class="w-full px-2 py-1 border rounded focus:outline-none focus:border-blue-500" />
+  `,
+  styles: [`
+    :host {
+      display: block;
+      width: 100%;
+    }
+    
+    input {
+      box-sizing: border-box;
+      width: 100%;
+    }
+  `]
 })
 export class InputCellComponent {
   @Input() value: any;

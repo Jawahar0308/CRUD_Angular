@@ -1,18 +1,43 @@
 /* In your table component's CSS file */
-:host ::ng-deep tbody {
+:host {
     display: block;
+    width: 100%;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    display: table-header-group;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    width: 100%;
+}
+
+tbody {
+    display: table-row-group;
     max-height: 400px;
     overflow-y: auto;
-}
-
-:host ::ng-deep thead,
-:host ::ng-deep tbody tr {
-    display: table;
     width: 100%;
-    table-layout: fixed;
 }
 
-:host ::ng-deep thead {
-    width: calc(100% - 0.5em);
-    /* Adjust for scrollbar width */
+tr {
+    display: table-row;
+    width: 100%;
+}
+
+th,
+td {
+    display: table-cell;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.overflow-x-auto {
+    overflow-x: auto;
+    max-width: 100%;
 }

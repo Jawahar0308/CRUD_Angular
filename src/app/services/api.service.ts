@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { BehaviorSubject, Observable, forkJoin, throwError } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { IUser, IAlbum } from '../../models/users.model';
 
 @Injectable({
@@ -16,76 +16,30 @@ export class ApiService {
 
   constructor(private http: HttpClient) { }
 
-  forkJoin({
-    users: this.http.get<any[]> (this.apiUrl1),
-      comments: this.http.get<any[]>(this.apiUrl2)
-  }).subscribe(({ users, comments }) => {
-        // Store the raw data directly in a variable
-        this.tableData = { users, comments };
-      });
-
+  // Get data from multiple APIs and merge
+  getDataFromMultipleAPIs(): Observable<any[]> {
+    return forkJoin({
+      users: this.http.get<IUser[]>(this.usersUrl),
+      albums: this.http.get<IAlbum[]>(this.albumsUrl)
+    }).pipe(
+      map(({ users, albums }) => {
+        // Merge data from both APIs
+        return users.map(user => {
+          const userAlbums = albums.filter(album => album['userId'] === user['id']);
+          return {
+            ...user,
+            albums: userAlbums,
+            title: userAlbums.length > 0 ? userAlbums[0]['title'] : 'No album found'
+          };
+        });
+      }),
+      catchError(this.handleError)
+    );
+  }
 
   // Handle API errors
   private handleError(error: HttpErrorResponse) {
-  console.error('API Error:', error);
-  return throwError(() => new Error('Something went wrong! Please try again.'));
-}
-
-  // CRUD operations for users
-  // createUser(user: any) {
-  //   return this.http.post<any>(this.usersUrl, user).pipe(
-  //     tap(() => {
-  //       this.getUsers();
-  //     })
-  //   );
-  // }
-
-  // updateUser(id: string, user: any) {
-  //   return this.http
-  //     .put<any>(`${this.usersUrl}/${id}`, user)
-  //     .subscribe(() => {
-  //       this.getUsers();
-  //     });
-  // }
-
-  // deleteUser(id: string) {
-  //   return this.http.delete(`${this.usersUrl}/${id}`).subscribe(() => {
-  //     this.getUsers();
-  //   });
-  // }
-
-  // private getUsers() {
-  //   this.http.get<IUser[]>(this.usersUrl).subscribe(users => {
-  //     this.users$.next(users);
-  //   });
-  // }
-
-  // // CRUD operations for albums
-  // createAlbum(album: any) {
-  //   return this.http.post<any>(this.albumsUrl, album).pipe(
-  //     tap(() => {
-  //       this.getAlbums();
-  //     })
-  //   );
-  // }
-
-  // updateAlbum(id: string, album: any) {
-  //   return this.http
-  //     .put<any>(`${this.albumsUrl}/${id}`, album)
-  //     .subscribe(() => {
-  //       this.getAlbums();
-  //     });
-  // }
-
-  // deleteAlbum(id: string) {
-  //   return this.http.delete(`${this.albumsUrl}/${id}`).subscribe(() => {
-  //     this.getAlbums();
-  //   });
-  // }
-
-  // private getAlbums() {
-  //   this.http.get<IAlbum[]>(this.albumsUrl).subscribe(albums => {
-  //     this.albums$.next(albums);
-  //   });
-  // }
+    console.error('API Error:', error);
+    return throwError(() => new Error('Something went wrong! Please try again.'));
+  }
 }
