@@ -17,7 +17,7 @@ import { FormsModule } from '@angular/forms';
             <input type="text" 
                  [ngModel]="getNestedValue(row, columnDataMapper[i-1])" 
                  (ngModelChange)="updateNestedValue(row, columnDataMapper[i-1], $event)"
-                 class="w-full h-full px-2 border-0 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                 class="w-full h-full px-2 border-0 focus:ring-2 focus:ring-blue-500 focus:outline-none rounded">
           </div>
         </td>
       </tr>
