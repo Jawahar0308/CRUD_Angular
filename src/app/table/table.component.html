@@ -26,7 +26,6 @@
             <p class="text-gray-500 text-xl">No data available</p>
         </div>
 
-
         <!-- Show table only when there's data -->
         <div *ngIf="!isLoading && hasData" class="border border-gray-300 rounded">
             <div class="w-full overflow-x-auto" style="max-height: 400px">
@@ -36,8 +35,7 @@
                     </app-table-header>
                     <app-table-row [data]="isEditing ? editedData : data" [columns]="columns"
                         [columnDataMapper]="columnDataMapper" [selectedRows]="selectedRows" (edit)="onEdit()"
-                        (startEdit)="onEdit()" (cellEdit)="onCellEdit($event)"
-                        (rowSelectionChange)="onRowSelectionChange($event)">
+                        (cellEdit)="onCellEdit($event)" (rowSelectionChange)="onRowSelectionChange($event)">
                     </app-table-row>
                 </table>
             </div>

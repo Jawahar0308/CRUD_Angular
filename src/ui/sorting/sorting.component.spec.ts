@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { InputCellComponent } from './input-cell.component';
+import { SortingComponent } from './sorting.component';
 
-describe('InputCellComponent', () => {
-  let component: InputCellComponent;
-  let fixture: ComponentFixture<InputCellComponent>;
+describe('SortingComponent', () => {
+  let component: SortingComponent;
+  let fixture: ComponentFixture<SortingComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [InputCellComponent]
+      imports: [SortingComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(InputCellComponent);
+    fixture = TestBed.createComponent(SortingComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

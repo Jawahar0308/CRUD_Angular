@@ -20,8 +20,9 @@ import { FormsModule } from '@angular/forms';
                class="h-4 w-4 text-blue-600">
         <div *ngIf="i !== 0" class="w-full h-full">
           <input type="text" 
-               [ngModel]="formatValue(getNestedValue(row, columnDataMapper[i-1]))"  (focus)="startEdit.emit()" 
+               [ngModel]="formatValue(getNestedValue(row, columnDataMapper[i-1]))" 
                (ngModelChange)="updateNestedValue(row, columnDataMapper[i-1], $event, rowIndex, i-1)" 
+               (focus)="onEdit()"
                class="w-full h-full px-2 border-0 focus:ring-2 focus:ring-blue-500 focus:outline-none rounded">
         </div>
       </td>
@@ -65,7 +66,12 @@ export class TableBodyComponent {
   @Output() edit = new EventEmitter<void>();
   @Output() cellEdit = new EventEmitter<{ rowIndex: number, columnIndex: number, path: string, oldValue: any, newValue: any }>();
   @Output() rowSelectionChange = new EventEmitter<{ rowIndex: number, selected: boolean }>();
-  @Output() startEdit = new EventEmitter<void>(); // Add this for focus event
+  // @Output() startEdit = new EventEmitter<void>(); 
+
+  // Replace onEdit with this new method that emits the startEdit event
+  onEdit() {
+    this.edit.emit();
+  }
 
   getNestedValue(obj: any, path: string): any {
     if (!path) return '';

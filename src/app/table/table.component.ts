@@ -1,3 +1,4 @@
+// src/app/table/table.component.ts
 import { Component, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableHeaderComponent } from "./table-header/table-header.component";
@@ -58,11 +59,9 @@ export class TableComponent implements OnInit {
   }
 
   onEdit() {
-    // No need to check for isEditing state, just set it to true
-    this.isEditing = true;
-    // Make a copy of the data if not already done
-    if (this.changedCells.length === 0) {
-      this.editedData = JSON.parse(JSON.stringify(this.data));
+    if (!this.isEditing) {
+      this.isEditing = true;
+      this.changedCells = [];
     }
   }
 
@@ -86,9 +85,6 @@ export class TableComponent implements OnInit {
         rowId
       });
     }
-
-    // Enable the save button when there are changes
-    this.isEditing = this.changedCells.length > 0;
   }
 
   onSave() {
