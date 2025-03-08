@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -14,7 +14,11 @@ import { CommonModule } from '@angular/common';
         <th *ngFor="let column of columns; let i = index" 
             class="border border-gray-600 h-10"
             [ngClass]="{'text-center': i === 0, 'px-2': i !== 0}">
-          <input *ngIf="i === 0" type="checkbox" class="h-4 w-4 text-blue-600">
+          <input *ngIf="i === 0" 
+                 type="checkbox" 
+                 [checked]="isAllSelected"
+                 (change)="toggleSelectAll($event)" 
+                 class="h-4 w-4 text-blue-600">
           <span title="{{column}}" *ngIf="i !== 0">{{ column }}</span>
         </th>
       </tr>
@@ -35,9 +39,17 @@ import { CommonModule } from '@angular/common';
     input[type="checkbox"] {
       display: block;
       margin: 0 auto;
+      cursor: pointer;
     }
   `]
 })
 export class TableHeaderComponent {
   @Input() columns: string[] = [];
+  @Input() isAllSelected: boolean = false;
+  @Output() selectAllChange = new EventEmitter<boolean>();
+
+  toggleSelectAll(event: Event) {
+    const isChecked = (event.target as HTMLInputElement).checked;
+    this.selectAllChange.emit(isChecked);
+  }
 }

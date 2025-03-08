@@ -8,12 +8,16 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <tbody class="w-full" style=" overflow-y: auto;">
+    <tbody class="w-full" style="overflow-y: auto;">
       <tr *ngFor="let row of data; let rowIndex = index" class="hover:bg-gray-100">
         <td *ngFor="let col of columns; let i = index" 
             class="border border-gray-300 h-10"
             [ngClass]="{'text-center': i === 0, 'p-0': i !== 0}">
-          <input *ngIf="i === 0" type="checkbox" class="h-4 w-4 text-blue-600">
+          <input *ngIf="i === 0" 
+                 type="checkbox" 
+                 [checked]="isRowSelected(rowIndex)"
+                 (change)="onRowCheckboxChange(rowIndex, $event)" 
+                 class="h-4 w-4 text-blue-600">
           <div *ngIf="i !== 0" class="w-full h-full">
             <input type="text" 
                  [ngModel]="getNestedValue(row, columnDataMapper[i-1])" 
@@ -48,6 +52,7 @@ import { FormsModule } from '@angular/forms';
     input[type="checkbox"] {
       display: block;
       margin: 0 auto;
+      cursor: pointer;
     }
   `]
 })
@@ -55,8 +60,11 @@ export class TableBodyComponent {
   @Input() data: any[] = [];
   @Input() columns: string[] = [];
   @Input() columnDataMapper: string[] = [];
+  @Input() selectedRows: Set<number> = new Set();
+
   @Output() edit = new EventEmitter<void>();
   @Output() cellEdit = new EventEmitter<{ rowIndex: number, columnIndex: number, path: string, oldValue: any, newValue: any }>();
+  @Output() rowSelectionChange = new EventEmitter<{ rowIndex: number, selected: boolean }>();
 
   onEdit() {
     this.edit.emit();
@@ -98,5 +106,15 @@ export class TableBodyComponent {
         });
       }
     }
+  }
+
+  // New methods for checkbox selection
+  isRowSelected(rowIndex: number): boolean {
+    return this.selectedRows.has(rowIndex);
+  }
+
+  onRowCheckboxChange(rowIndex: number, event: Event) {
+    const isChecked = (event.target as HTMLInputElement).checked;
+    this.rowSelectionChange.emit({ rowIndex, selected: isChecked });
   }
 }
