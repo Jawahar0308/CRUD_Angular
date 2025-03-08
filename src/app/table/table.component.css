@@ -3,6 +3,16 @@
     width: 100%;
 }
 
+.table-container {
+    position: relative;
+    max-height: 400px;
+}
+
+.overflow-x-auto {
+    overflow-x: auto;
+    width: 100%;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -19,6 +29,16 @@ thead {
 
 tbody {
     width: 100%;
+    display: block;
+    max-height: calc(400px - 40px);
+    /* Subtract header height */
+    overflow-y: auto;
+}
+
+tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
 }
 
 /* Use colgroup to enforce consistent widths */
