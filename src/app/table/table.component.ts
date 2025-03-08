@@ -58,9 +58,11 @@ export class TableComponent implements OnInit {
   }
 
   onEdit() {
-    if (!this.isEditing) {
-      this.isEditing = true;
-      this.changedCells = [];
+    // No need to check for isEditing state, just set it to true
+    this.isEditing = true;
+    // Make a copy of the data if not already done
+    if (this.changedCells.length === 0) {
+      this.editedData = JSON.parse(JSON.stringify(this.data));
     }
   }
 

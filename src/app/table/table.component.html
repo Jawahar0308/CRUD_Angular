@@ -36,7 +36,8 @@
                     </app-table-header>
                     <app-table-row [data]="isEditing ? editedData : data" [columns]="columns"
                         [columnDataMapper]="columnDataMapper" [selectedRows]="selectedRows" (edit)="onEdit()"
-                        (cellEdit)="onCellEdit($event)" (rowSelectionChange)="onRowSelectionChange($event)">
+                        (startEdit)="onEdit()" (cellEdit)="onCellEdit($event)"
+                        (rowSelectionChange)="onRowSelectionChange($event)">
                     </app-table-row>
                 </table>
             </div>

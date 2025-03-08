@@ -20,7 +20,7 @@ import { FormsModule } from '@angular/forms';
                class="h-4 w-4 text-blue-600">
         <div *ngIf="i !== 0" class="w-full h-full">
           <input type="text" 
-               [ngModel]="formatValue(getNestedValue(row, columnDataMapper[i-1]))" 
+               [ngModel]="formatValue(getNestedValue(row, columnDataMapper[i-1]))"  (focus)="startEdit.emit()" 
                (ngModelChange)="updateNestedValue(row, columnDataMapper[i-1], $event, rowIndex, i-1)" 
                class="w-full h-full px-2 border-0 focus:ring-2 focus:ring-blue-500 focus:outline-none rounded">
         </div>
