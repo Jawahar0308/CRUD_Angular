@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="fixed inset-0 bg-gray-300 bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white rounded-lg p-6 max-w-md w-full">
         <h3 class="text-lg font-bold mb-4">{{ title }}</h3>
         <p class="mb-6">{{ message }}</p>

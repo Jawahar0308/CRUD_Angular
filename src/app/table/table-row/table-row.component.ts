@@ -20,7 +20,7 @@ import { FormsModule } from '@angular/forms';
                  class="h-4 w-4 text-blue-600">
           <div *ngIf="i !== 0" class="w-full h-full">
             <input type="text" 
-                 [ngModel]="getNestedValue(row, columnDataMapper[i-1])" 
+                 [ngModel]="formatValue(getNestedValue(row, columnDataMapper[i-1]))" 
                  (ngModelChange)="updateNestedValue(row, columnDataMapper[i-1], $event, rowIndex, i-1)" 
                  (click)="onEdit()"
                  class="w-full h-full px-2 border-0 focus:ring-2 focus:ring-blue-500 focus:outline-none rounded">
@@ -78,6 +78,14 @@ export class TableBodyComponent {
     }, obj);
   }
 
+  // Format the value for display - show "null" for null values
+  formatValue(value: any): string {
+    if (value === null) {
+      return 'null';
+    }
+    return value;
+  }
+
   updateNestedValue(obj: any, path: string, value: any, rowIndex: number, columnIndex: number): void {
     if (!path) return;
 
@@ -108,7 +116,7 @@ export class TableBodyComponent {
     }
   }
 
-  // New methods for checkbox selection
+  // Methods for checkbox selection
   isRowSelected(rowIndex: number): boolean {
     return this.selectedRows.has(rowIndex);
   }

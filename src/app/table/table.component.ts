@@ -1,6 +1,4 @@
-// 1. First, update the TableComponent to track selections
-
-// src/app/table/table.component.ts - Add selection tracking
+// src/app/table/table.component.ts
 import { Component, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableHeaderComponent } from "./table-header/table-header.component";
@@ -63,6 +61,11 @@ export class TableComponent implements OnInit {
   onCellEdit(change: { rowIndex: number, columnIndex: number, path: string, oldValue: any, newValue: any }) {
     const rowId = this.editedData[change.rowIndex]?.id || `row-${change.rowIndex}`;
 
+    // Check if the value is empty and set it to null
+    if (change.newValue === '') {
+      change.newValue = null;
+    }
+
     const existingChangeIndex = this.changedCells.findIndex(
       c => c.rowIndex === change.rowIndex && c.columnIndex === change.columnIndex
     );
@@ -78,6 +81,31 @@ export class TableComponent implements OnInit {
   }
 
   onSave() {
+    // Process the editedData to replace empty strings with null
+    this.editedData.forEach(row => {
+      this.columnDataMapper.forEach(path => {
+        if (path) {
+          const parts = path.split('.');
+          let current = row;
+
+          // Navigate to the nested property
+          for (let i = 0; i < parts.length - 1; i++) {
+            if (current && current[parts[i]]) {
+              current = current[parts[i]];
+            } else {
+              break;
+            }
+          }
+
+          // Set empty string values to null
+          const lastPart = parts[parts.length - 1];
+          if (current && current[lastPart] === '') {
+            current[lastPart] = null;
+          }
+        }
+      });
+    });
+
     this.data = JSON.parse(JSON.stringify(this.editedData));
 
     if (this.changedCells.length > 0) {
@@ -127,6 +155,10 @@ export class TableComponent implements OnInit {
 
   get hasSelectedRows(): boolean {
     return this.selectedRows.size > 0;
+  }
+
+  get hasData(): boolean {
+    return this.data && this.data.length > 0;
   }
 
   openDeleteModal() {

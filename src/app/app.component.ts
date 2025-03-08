@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
 import { TablePageComponent } from "./pages/table-page/table-page.component";
 import { CommonModule } from '@angular/common';
 import { ApiService } from './services/api.service';
@@ -7,7 +6,7 @@ import { ApiService } from './services/api.service';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, TablePageComponent],
+  imports: [CommonModule, TablePageComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
