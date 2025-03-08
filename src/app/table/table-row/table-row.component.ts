@@ -8,27 +8,26 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <tbody class="w-full" style="overflow-y: auto;">
-      <tr *ngFor="let row of data; let rowIndex = index" class="hover:bg-gray-100">
-        <td *ngFor="let col of columns; let i = index" 
-            class="border border-gray-300 h-10"
-            [ngClass]="{'text-center': i === 0, 'p-0': i !== 0}">
-          <input *ngIf="i === 0" 
-                 type="checkbox" 
-                 [checked]="isRowSelected(rowIndex)"
-                 (change)="onRowCheckboxChange(rowIndex, $event)" 
-                 class="h-4 w-4 text-blue-600">
-          <div *ngIf="i !== 0" class="w-full h-full">
-            <input type="text" 
-                 [ngModel]="formatValue(getNestedValue(row, columnDataMapper[i-1]))" 
-                 (ngModelChange)="updateNestedValue(row, columnDataMapper[i-1], $event, rowIndex, i-1)" 
-                 (click)="onEdit()"
-                 class="w-full h-full px-2 border-0 focus:ring-2 focus:ring-blue-500 focus:outline-none rounded">
-          </div>
-        </td>
-      </tr>
-    </tbody>
-  `,
+  <tbody class="w-full" style="overflow-y: auto;">
+    <tr *ngFor="let row of data; let rowIndex = index" class="hover:bg-gray-100">
+      <td *ngFor="let col of columns; let i = index" 
+          class="border border-gray-300 h-10"
+          [ngClass]="{'text-center': i === 0, 'p-0': i !== 0}">
+        <input *ngIf="i === 0" 
+               type="checkbox" 
+               [checked]="isRowSelected(rowIndex)"
+               (change)="onRowCheckboxChange(rowIndex, $event)" 
+               class="h-4 w-4 text-blue-600">
+        <div *ngIf="i !== 0" class="w-full h-full">
+          <input type="text" 
+               [ngModel]="formatValue(getNestedValue(row, columnDataMapper[i-1]))" 
+               (ngModelChange)="updateNestedValue(row, columnDataMapper[i-1], $event, rowIndex, i-1)" 
+               class="w-full h-full px-2 border-0 focus:ring-2 focus:ring-blue-500 focus:outline-none rounded">
+        </div>
+      </td>
+    </tr>
+  </tbody>
+`,
   styles: [`
     :host {
       display: contents;
@@ -61,14 +60,12 @@ export class TableBodyComponent {
   @Input() columns: string[] = [];
   @Input() columnDataMapper: string[] = [];
   @Input() selectedRows: Set<number> = new Set();
+  @Input() isEditing: boolean = false; // Add this to receive editing state from parent
 
   @Output() edit = new EventEmitter<void>();
   @Output() cellEdit = new EventEmitter<{ rowIndex: number, columnIndex: number, path: string, oldValue: any, newValue: any }>();
   @Output() rowSelectionChange = new EventEmitter<{ rowIndex: number, selected: boolean }>();
-
-  onEdit() {
-    this.edit.emit();
-  }
+  @Output() startEdit = new EventEmitter<void>(); // Add this for focus event
 
   getNestedValue(obj: any, path: string): any {
     if (!path) return '';

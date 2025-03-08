@@ -1,4 +1,3 @@
-// src/app/table/table.component.ts
 import { Component, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableHeaderComponent } from "./table-header/table-header.component";
@@ -34,20 +33,27 @@ export class TableComponent implements OnInit {
   selectedRows: Set<number> = new Set();
   isAllSelected: boolean = false;
   showDeleteModal: boolean = false;
+  isLoading = true;
 
   constructor(private apiService: ApiService) { }
 
   ngOnInit() {
     if (!this.data || this.data.length === 0) {
+      this.isLoading = true;
       this.apiService.getDataFromMultipleAPIs().subscribe(
         (mergedData) => {
           this.data = mergedData;
           this.editedData = JSON.parse(JSON.stringify(this.data));
+          this.isLoading = false;
         },
-        (error) => console.error('Error fetching data:', error)
+        (error) => {
+          console.error('Error fetching data:', error);
+          this.isLoading = false;
+        }
       );
     } else {
       this.editedData = JSON.parse(JSON.stringify(this.data));
+      this.isLoading = false;
     }
   }
 
@@ -78,6 +84,9 @@ export class TableComponent implements OnInit {
         rowId
       });
     }
+
+    // Enable the save button when there are changes
+    this.isEditing = this.changedCells.length > 0;
   }
 
   onSave() {
