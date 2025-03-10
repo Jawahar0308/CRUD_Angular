@@ -6,11 +6,21 @@ import { TableBodyComponent } from "./table-row/table-row.component";
 import { ApiService } from "../services/api.service";
 import { ButtonComponent } from '../../ui/button/button.component';
 import { ModalComponent } from '../../ui/modal/modal.component';
+import { FilterComponent } from '../../ui/filter/filter.component';
+import { SortComponent } from '../../ui/sorting/sorting.component';
 
 @Component({
   selector: 'app-table',
   standalone: true,
-  imports: [CommonModule, TableHeaderComponent, TableBodyComponent, ButtonComponent, ModalComponent],
+  imports: [
+    CommonModule,
+    TableHeaderComponent,
+    TableBodyComponent,
+    ButtonComponent,
+    ModalComponent,
+    FilterComponent,
+    SortComponent
+  ],
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.css']
 })
@@ -19,6 +29,13 @@ export class TableComponent implements OnInit {
   @Input() columnDataMapper: string[] = [];
   @Input() data: any[] = [];
 
+  // Original data without any filtering/sorting
+  originalData: any[] = [];
+
+  // Data displayed in the table
+  displayedData: any[] = [];
+
+  // Editing state
   isEditing = false;
   editedData: any[] = [];
   changedCells: {
@@ -30,11 +47,19 @@ export class TableComponent implements OnInit {
     rowId?: any;
   }[] = [];
 
-  // New properties for deletion functionality
+  // Selection state
   selectedRows: Set<number> = new Set();
   isAllSelected: boolean = false;
   showDeleteModal: boolean = false;
   isLoading = true;
+
+  // Filtering state
+  globalFilter: string = '';
+  columnFilters: { [columnIndex: number]: string } = {};
+
+  // Sorting state
+  sortColumn: string = '';
+  sortDirection: 'asc' | 'desc' = 'asc';
 
   constructor(private apiService: ApiService) { }
 
@@ -43,8 +68,9 @@ export class TableComponent implements OnInit {
       this.isLoading = true;
       this.apiService.getDataFromMultipleAPIs().subscribe(
         (mergedData) => {
-          this.data = mergedData;
-          this.editedData = JSON.parse(JSON.stringify(this.data));
+          this.originalData = mergedData;
+          this.displayedData = [...this.originalData];
+          this.editedData = JSON.parse(JSON.stringify(this.displayedData));
           this.isLoading = false;
         },
         (error) => {
@@ -53,11 +79,14 @@ export class TableComponent implements OnInit {
         }
       );
     } else {
-      this.editedData = JSON.parse(JSON.stringify(this.data));
+      this.originalData = [...this.data];
+      this.displayedData = [...this.originalData];
+      this.editedData = JSON.parse(JSON.stringify(this.displayedData));
       this.isLoading = false;
     }
   }
 
+  // EDIT METHODS
   onEdit() {
     if (!this.isEditing) {
       this.isEditing = true;
@@ -113,7 +142,11 @@ export class TableComponent implements OnInit {
       });
     });
 
-    this.data = JSON.parse(JSON.stringify(this.editedData));
+    // Update the original data with edited changes
+    this.displayedData = JSON.parse(JSON.stringify(this.editedData));
+
+    // Apply any filters again to maintain consistency
+    this.applyFiltersAndSort();
 
     if (this.changedCells.length > 0) {
       console.log('Edited Cell Data:', this.changedCells);
@@ -137,7 +170,7 @@ export class TableComponent implements OnInit {
     this.isEditing = false;
   }
 
-  // New methods for checkbox selection
+  // SELECTION METHODS
   onRowSelectionChange(event: { rowIndex: number, selected: boolean }) {
     if (event.selected) {
       this.selectedRows.add(event.rowIndex);
@@ -151,7 +184,7 @@ export class TableComponent implements OnInit {
 
     if (selected) {
       // Select all rows
-      for (let i = 0; i < this.data.length; i++) {
+      for (let i = 0; i < this.displayedData.length; i++) {
         this.selectedRows.add(i);
       }
     } else {
@@ -160,12 +193,108 @@ export class TableComponent implements OnInit {
     }
   }
 
+  // FILTER METHODS
+  onGlobalFilterChange(value: string) {
+    this.globalFilter = value;
+    this.applyFiltersAndSort();
+  }
+
+  onColumnFilterChange(event: { columnIndex: number, value: string }) {
+    if (event.value) {
+      this.columnFilters[event.columnIndex] = event.value;
+    } else {
+      delete this.columnFilters[event.columnIndex];
+    }
+    this.applyFiltersAndSort();
+  }
+
+  // SORT METHODS
+  onSortChange(event: { column: string, direction: 'asc' | 'desc' }) {
+    this.sortColumn = event.column;
+    this.sortDirection = event.direction;
+    this.applyFiltersAndSort();
+  }
+
+  // FILTER AND SORT IMPLEMENTATION
+  applyFiltersAndSort() {
+    // Start with a copy of original data
+    let filteredData = JSON.parse(JSON.stringify(this.originalData));
+
+    // Apply global filter
+    if (this.globalFilter) {
+      const searchTerm = this.globalFilter.toLowerCase();
+      filteredData = filteredData.filter((row: any) => {
+        // Search through all mapped columns
+        return this.columnDataMapper.some(path => {
+          if (!path) return false;
+          const value = this.getNestedValue(row, path);
+          return value !== null &&
+            value !== undefined &&
+            value.toString().toLowerCase().includes(searchTerm);
+        });
+      });
+    }
+
+    // Apply column filters
+    Object.entries(this.columnFilters).forEach(([columnIndexStr, filterValue]) => {
+      const columnIndex = parseInt(columnIndexStr);
+      const path = this.columnDataMapper[columnIndex - 1]; // Adjust for first checkbox column
+
+      if (path && filterValue) {
+        const searchTerm = filterValue.toLowerCase();
+        filteredData = filteredData.filter((row: any) => {
+          const value = this.getNestedValue(row, path);
+          return value !== null &&
+            value !== undefined &&
+            value.toString().toLowerCase().includes(searchTerm);
+        });
+      }
+    });
+
+    // Apply sort
+    if (this.sortColumn) {
+      const colIndex = this.columns.indexOf(this.sortColumn) - 1; // Adjust for first checkbox column
+      if (colIndex >= 0) {
+        const path = this.columnDataMapper[colIndex];
+
+        filteredData.sort((a: any, b: any) => {
+          const valueA = this.getNestedValue(a, path);
+          const valueB = this.getNestedValue(b, path);
+
+          // Handle null values
+          if (valueA === null && valueB === null) return 0;
+          if (valueA === null) return this.sortDirection === 'asc' ? 1 : -1;
+          if (valueB === null) return this.sortDirection === 'asc' ? -1 : 1;
+
+          // Compare values
+          if (valueA < valueB) return this.sortDirection === 'asc' ? -1 : 1;
+          if (valueA > valueB) return this.sortDirection === 'asc' ? 1 : -1;
+          return 0;
+        });
+      }
+    }
+
+    // Update displayed data
+    this.displayedData = filteredData;
+    this.editedData = JSON.parse(JSON.stringify(this.displayedData));
+  }
+
+  // Helper method to access nested properties
+  getNestedValue(obj: any, path: string): any {
+    if (!path) return '';
+
+    return path.split('.').reduce((prev, curr) => {
+      return prev && prev[curr] !== undefined ? prev[curr] : null;
+    }, obj);
+  }
+
+  // MODAL AND DELETE OPERATIONS
   get hasSelectedRows(): boolean {
     return this.selectedRows.size > 0;
   }
 
   get hasData(): boolean {
-    return this.data && this.data.length > 0;
+    return this.displayedData && this.displayedData.length > 0;
   }
 
   openDeleteModal() {
@@ -180,10 +309,20 @@ export class TableComponent implements OnInit {
     // Convert set to array and sort in descending order to avoid index shifting problems
     const selectedIndices = Array.from(this.selectedRows).sort((a, b) => b - a);
 
-    // Remove the selected rows from the data array
+    // Remove the selected rows from the data arrays
     selectedIndices.forEach(index => {
-      this.data.splice(index, 1);
+      // Get the ID of the row to remove from original data
+      const idToRemove = this.displayedData[index].id;
+
+      // Remove from displayed data
+      this.displayedData.splice(index, 1);
       this.editedData.splice(index, 1);
+
+      // Remove from original data
+      const originalIndex = this.originalData.findIndex(item => item.id === idToRemove);
+      if (originalIndex >= 0) {
+        this.originalData.splice(originalIndex, 1);
+      }
     });
 
     // Clear selection after deletion

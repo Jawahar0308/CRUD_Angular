@@ -2,11 +2,18 @@
 <div class="container mx-auto p-4">
     <div *ngIf="!isLoading && hasData" class="flex justify-between items-center mb-4">
         <h2 class="text-2xl font-bold">User Data</h2>
-        <div class="flex space-x-2">
+        <div class="flex space-x-2 items-center">
+            <!-- Global Filter component -->
+            <app-filter (filterChange)="onGlobalFilterChange($event)"></app-filter>
+
+            <!-- Sort component -->
+            <app-sort [columns]="columns.slice(1)" (sortChange)="onSortChange($event)"></app-sort>
+
             <!-- Delete button -->
             <app-button [buttonLabel]="'Delete'" [buttonColor]="'bg-red-500 hover:bg-red-600'"
                 [disabled]="!hasSelectedRows" (buttonClick)="openDeleteModal()">
             </app-button>
+
             <!-- Save button -->
             <app-button [buttonLabel]="'Save changes'" [buttonColor]="'bg-green-500 hover:bg-green-600'"
                 [disabled]="!isEditing" (buttonClick)="onSave()">
@@ -28,12 +35,13 @@
 
         <!-- Show table only when there's data -->
         <div *ngIf="!isLoading && hasData" class="border border-gray-300 rounded">
-            <div class="w-full overflow-x-auto" style="max-height: 400px">
-                <table class="w-full border-collapse border border-gray-300">
-                    <app-table-header [columns]="columns" [isAllSelected]="isAllSelected"
-                        (selectAllChange)="onSelectAllChange($event)">
+            <div class="w-auto overflow-x-auto" style="max-height: 400px">
+                <table class="w-auto border-collapse border border-gray-300">
+                    <app-table-header [columns]="columns" [isAllSelected]="isAllSelected" [sortColumn]="sortColumn"
+                        [sortDirection]="sortDirection" (selectAllChange)="onSelectAllChange($event)"
+                        (sortChange)="onSortChange($event)" (columnFilterChange)="onColumnFilterChange($event)">
                     </app-table-header>
-                    <app-table-row [data]="isEditing ? editedData : data" [columns]="columns"
+                    <app-table-row [data]="isEditing ? editedData : displayedData" [columns]="columns"
                         [columnDataMapper]="columnDataMapper" [selectedRows]="selectedRows" (edit)="onEdit()"
                         (cellEdit)="onCellEdit($event)" (rowSelectionChange)="onRowSelectionChange($event)">
                     </app-table-row>
@@ -47,3 +55,4 @@
         [message]="'Are you sure you want to delete ' + selectedRows.size + (selectedRows.size === 1 ? ' row?' : ' rows?')"
         (confirm)="deleteSelectedRows()" (cancel)="closeDeleteModal()">
     </app-modal>
+</div>
