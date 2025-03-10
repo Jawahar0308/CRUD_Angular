@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { BehaviorSubject, Observable, forkJoin, throwError } from 'rxjs';
+import { Observable, forkJoin, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { IUser, IAlbum } from '../../models/users.model';
 
 @Injectable({
   providedIn: 'root'
@@ -11,16 +10,16 @@ export class ApiService {
   private usersUrl = 'https://jsonplaceholder.typicode.com/users';
   private albumsUrl = 'https://jsonplaceholder.typicode.com/albums';
 
-  public users$ = new BehaviorSubject<IUser[]>([]);
-  public albums$ = new BehaviorSubject<IAlbum[]>([]);
+  // public users$ = new BehaviorSubject<IUser[]>([]);
+  // public albums$ = new BehaviorSubject<IAlbum[]>([]);
 
   constructor(private http: HttpClient) { }
 
   // Get data from multiple APIs and merge
   getDataFromMultipleAPIs(): Observable<any[]> {
     return forkJoin({
-      users: this.http.get<IUser[]>(this.usersUrl),
-      albums: this.http.get<IAlbum[]>(this.albumsUrl)
+      users: this.http.get<any[]>(this.usersUrl),
+      albums: this.http.get<any[]>(this.albumsUrl)
     }).pipe(
       map(({ users, albums }) => {
         // Merge data from both APIs

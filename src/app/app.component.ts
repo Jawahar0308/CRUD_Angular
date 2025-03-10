@@ -18,7 +18,7 @@ export class AppComponent implements OnInit {
 
   constructor(private apiService: ApiService) { }
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.apiService.getDataFromMultipleAPIs().subscribe(
       data => {
         this.users = data;

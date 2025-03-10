@@ -16,7 +16,6 @@ import { FormsModule } from '@angular/forms';
         class="px-3 py-2 border rounded-md pl-8 w-64"
       />
       <span class="absolute left-2 top-2 text-gray-400">
-        <!-- Search icon (you can use an actual icon library in your project) -->
         🔍
       </span>
       <button 

@@ -45,6 +45,7 @@ export class TableComponent implements OnInit {
     oldValue: any;
     newValue: any;
     rowId?: any;
+    isValid?: boolean;
   }[] = [];
 
   // Selection state
@@ -94,59 +95,112 @@ export class TableComponent implements OnInit {
     }
   }
 
-  onCellEdit(change: { rowIndex: number, columnIndex: number, path: string, oldValue: any, newValue: any }) {
+  onCellEdit(change: { rowIndex: number, columnIndex: number, path: string, oldValue: any, newValue: any, isValid: boolean }) {
     const rowId = this.editedData[change.rowIndex]?.id || `row-${change.rowIndex}`;
 
-    // Check if the value is empty and set it to null
-    if (change.newValue === '') {
-      change.newValue = null;
-    }
-
+    // Store the validation state and raw value for processing during save
     const existingChangeIndex = this.changedCells.findIndex(
       c => c.rowIndex === change.rowIndex && c.columnIndex === change.columnIndex
     );
 
     if (existingChangeIndex >= 0) {
       this.changedCells[existingChangeIndex].newValue = change.newValue;
+      this.changedCells[existingChangeIndex].isValid = change.isValid;
     } else {
       this.changedCells.push({
         ...change,
-        rowId
+        rowId,
+        isValid: change.isValid
       });
     }
   }
 
   onSave() {
-    // Process the editedData to replace empty strings with null
-    this.editedData.forEach(row => {
-      this.columnDataMapper.forEach(path => {
+    // Deep clone to avoid modifying the editing values
+    const processedData = JSON.parse(JSON.stringify(this.editedData));
+
+    // Create a map of changed cells for quick lookup
+    const changedCellsMap = new Map();
+    this.changedCells.forEach(change => {
+      const key = `${change.rowIndex}-${change.path}`;
+      changedCellsMap.set(key, change);
+    });
+
+    // Process each cell to format null and invalid values, but only validate changed cells
+    processedData.forEach((row: any, rowIndex: any) => {
+      this.columnDataMapper.forEach((path, colIndex) => {
         if (path) {
           const parts = path.split('.');
           let current = row;
 
-          // Navigate to the nested property
-          for (let i = 0; i < parts.length - 1; i++) {
-            if (current && current[parts[i]]) {
-              current = current[parts[i]];
-            } else {
-              break;
+          // Get the value to validate
+          const value = this.getNestedValue(row, path);
+
+          // Check if this cell was edited
+          const wasEdited = changedCellsMap.has(`${rowIndex}-${path}`);
+
+          // Handle empty/null values - explicitly set them to null
+          if (value === null || value === undefined || value === '') {
+            // Navigate to the parent object
+            for (let i = 0; i < parts.length - 1; i++) {
+              if (current && current[parts[i]]) {
+                current = current[parts[i]];
+              } else {
+                break;
+              }
             }
+
+            // Set empty values to null
+            const lastPart = parts[parts.length - 1];
+            if (current) {
+              current[lastPart] = null;
+            }
+            return; // Skip further processing
           }
 
-          // Set empty string values to null
-          const lastPart = parts[parts.length - 1];
-          if (current && current[lastPart] === '') {
-            current[lastPart] = null;
+          // Only validate cells that were actually edited
+          if (wasEdited) {
+            let isValid = true;
+            if (path.includes('email')) {
+              isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+            } else if (path.includes('phone')) {
+              isValid = /^\+?[1-9]\d{0,2}[\s\-\(\)\.]*[0-9][0-9\s\-\(\)\.]*$/.test(value);
+            } else if (path === 'id' || path.includes('userId')) {
+              isValid = !isNaN(Number(value));
+            } else {
+              isValid = value !== '';
+            }
+
+            // Navigate to the parent object
+            for (let i = 0; i < parts.length - 1; i++) {
+              if (current && current[parts[i]]) {
+                current = current[parts[i]];
+              } else {
+                break;
+              }
+            }
+
+            // Set invalid values to "unknown" only if the cell was edited
+            const lastPart = parts[parts.length - 1];
+            if (current && !isValid) {
+              current[lastPart] = "unknown";
+            }
           }
         }
       });
     });
 
-    // Update the original data with edited changes
-    this.displayedData = JSON.parse(JSON.stringify(this.editedData));
+    // Now update the display data with the processed values
+    this.displayedData = processedData;
 
-    // Apply any filters again to maintain consistency
-    this.applyFiltersAndSort();
+    // Also update the original data if needed
+    this.originalData = this.originalData.map(row => {
+      const matchedRow = processedData.find((pRow: { id: any; }) => pRow.id === row.id);
+      return matchedRow || row;
+    });
+
+    // Update the editing data to reflect the changes
+    this.editedData = JSON.parse(JSON.stringify(this.displayedData));
 
     if (this.changedCells.length > 0) {
       console.log('Edited Cell Data:', this.changedCells);
@@ -158,7 +212,8 @@ export class TableComponent implements OnInit {
           field: columnName,
           path: change.path,
           from: change.oldValue,
-          to: change.newValue
+          to: change.newValue,
+          isValid: change.isValid
         };
       });
 
@@ -168,6 +223,9 @@ export class TableComponent implements OnInit {
     }
 
     this.isEditing = false;
+
+    // Clear the changed cells array after saving
+    this.changedCells = [];
   }
 
   // SELECTION METHODS
