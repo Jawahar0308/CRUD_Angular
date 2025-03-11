@@ -11,6 +11,8 @@
 .overflow-x-auto {
     overflow-x: auto;
     width: 100%;
+    /* Ensures scrollbar is always present to avoid layout shifts */
+    overflow-y: scroll;
 }
 
 table {
@@ -31,8 +33,14 @@ tbody {
     width: 100%;
     display: block;
     max-height: calc(400px - 40px);
-    /* Subtract header height */
     overflow-y: auto;
+    overscroll-behavior: none;
+}
+
+.overflow-x-auto {
+    overflow-x: auto;
+    width: 100%;
+    overscroll-behavior: none;
 }
 
 tr {
@@ -57,4 +65,10 @@ td {
     padding: 0;
     vertical-align: middle;
     box-sizing: border-box;
+}
+
+/* Add this to align header and body width */
+thead tr {
+    width: calc(100% - 17px);
+    /* Account for scrollbar width */
 }

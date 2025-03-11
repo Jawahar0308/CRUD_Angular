@@ -7,8 +7,8 @@ import { catchError, map } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class ApiService {
-  private usersUrl = 'https://jsonplaceholder.typicode.com/users';
-  private albumsUrl = 'https://jsonplaceholder.typicode.com/albums';
+  // private usersUrl = 'https://jsonplaceholder.typicode.com/users';
+  private albumsUrl = 'https://jsonplaceholder.typicode.com/posts';
 
   // public users$ = new BehaviorSubject<IUser[]>([]);
   // public albums$ = new BehaviorSubject<IAlbum[]>([]);
@@ -18,17 +18,15 @@ export class ApiService {
   // Get data from multiple APIs and merge
   getDataFromMultipleAPIs(): Observable<any[]> {
     return forkJoin({
-      users: this.http.get<any[]>(this.usersUrl),
+      // users: this.http.get<any[]>(this.usersUrl),
       albums: this.http.get<any[]>(this.albumsUrl)
     }).pipe(
-      map(({ users, albums }) => {
+      map(({ albums }) => {
         // Merge data from both APIs
-        return users.map(user => {
+        return albums.map(user => {
           const userAlbums = albums.filter(album => album['userId'] === user['id']);
           return {
-            ...user,
-            albums: userAlbums,
-            title: userAlbums.length > 0 ? userAlbums[0]['title'] : 'No album found'
+            ...user
           };
         });
       }),
