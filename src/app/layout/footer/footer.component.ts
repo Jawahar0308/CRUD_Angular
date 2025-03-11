@@ -1,4 +1,3 @@
-// filepath: /home/jawahar/FRONTEND/Angular/CRUD_Angular/src/app/layout/footer/footer.component.ts
 import { Component } from '@angular/core';
 
 @Component({

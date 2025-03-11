@@ -12,7 +12,6 @@ import { FooterComponent } from "../../layout/footer/footer.component";
   styleUrl: './table-page.component.css'
 })
 export class TablePageComponent {
-  @Input() columns: string[] = [];
-  @Input() columnDataMapper: string[] = [];
-  @Input() data: any[] = [];
+  columns = ['', 'Name', 'Company Name', 'Email', 'Street', 'City', 'Phone', 'Website', 'Title'];
+  columnDataMapper = ['name', 'company.name', 'email', 'address.street', 'address.city', 'phone', 'website', 'title'];
 }

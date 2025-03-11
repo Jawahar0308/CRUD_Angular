@@ -28,8 +28,8 @@ import { CommonModule } from '@angular/common';
   styles: []
 })
 export class ModalComponent {
-  @Input() title: string = 'Confirm';
-  @Input() message: string = 'Are you sure?';
+  @Input() title: string = '';
+  @Input() message: string = '';
   @Output() confirm = new EventEmitter<void>();
   @Output() cancel = new EventEmitter<void>();
 

@@ -10,20 +10,6 @@ import { ApiService } from './services/api.service';
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   title = 'CRUD_Angular';
-  users: any[] = [];
-  columns = ['', 'Name', 'Company Name', 'Email', 'Street', 'City', 'Phone', 'Website', 'Title'];
-  columnDataMapper = ['name', 'company.name', 'email', 'address.street', 'address.city', 'phone', 'website', 'title'];
-
-  constructor(private apiService: ApiService) { }
-
-  ngOnInit() {
-    this.apiService.getDataFromMultipleAPIs().subscribe(
-      data => {
-        this.users = data;
-      },
-      error => console.error('Error fetching data:', error)
-    );
-  }
 }
